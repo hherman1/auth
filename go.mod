@@ -1,4 +1,4 @@
-module github.com/hherman/auth
+module github.com/hherman1/auth
 
 go 1.18
 
