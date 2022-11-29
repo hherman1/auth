@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/hherman1/auth/auth"
+
 	_ "modernc.org/sqlite"
 )
 
@@ -47,21 +49,21 @@ func run(ctx context.Context) error {
 	defer db.Close()
 
 	// Create table
-	err = initialize(ctx, db)
+	err = auth.Initialize(ctx, db)
 	if err != nil {
 		return fmt.Errorf("initialize schema: %w", err)
 	}
 
-	err = RegisterUser(ctx, db, "hunter", "hunter@hherman.com", "test123")
+	err = auth.RegisterUser(ctx, db, "hunter", "hunter@hherman.com", "test123")
 	if err != nil {
 		return fmt.Errorf("test user: %w", err)
 	}
 
 	// serve traffic
-	auth := AuthServer{Authenticator: DBAuthenticator{db}}
+	auth := auth.AuthServer{Authenticator: auth.DBAuthenticator{db}}
 	http.Handle("/auth/", auth.Handler("/auth"))
-	filter := AuthFilter{
-		Validator: DBAuthenticator{db},
+	filter := auth.AuthFilter{
+		Validator: auth.DBAuthenticator{db},
 		LoginURL:  "http://localhost:8090/auth/login",
 	}
 	http.Handle("/secured", filter.Handler(func(t Token, w http.ResponseWriter, r *http.Request) {

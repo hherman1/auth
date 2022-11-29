@@ -1,4 +1,4 @@
-package main
+package auth
 
 import (
 	"context"
@@ -201,7 +201,7 @@ func Authenticate(ctx context.Context, db conn, idOrEmail, password string) erro
 }
 
 // Ensures all our tables exist
-func initialize(ctx context.Context, db conn) error {
+func Initialize(ctx context.Context, db conn) error {
 	steps := []struct {
 		Name  string
 		Query string
